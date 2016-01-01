@@ -1,28 +1,28 @@
 {
-    "name": "generator-jhipster-basic-auth",
-    "version": "0.0.0",
-    "description": "Adds stateless basic authentication support",
-    "keywords": [
-        "yeoman-generator",
-        "jhipster-module"
-    ],
-    "homepage": "https://github.com/cbornet/generator-jhipster-basic-auth",
-    "bugs": "https://github.com/cbornet/generator-jhipster-basic-auth/issues",
-    "author": {
-        "name": "Christophe Bornet",
-        "email": "",
-        "url": ""
-    },
-    "files": [
-        "generators"
-    ],
-    "main": "generators/app/index.js",
-    "repository": "https://github.com/cbornet/generator-jhipster-basic-auth",
-    "dependencies": {
-        "yeoman-generator": "0.21.1",
-        "chalk": "1.0.0",
-        "yosay": "1.0.2",
-        "generator-jhipster": ">=2.26.0"
-    },
-    "license": "Apache-2.0"
+  "name": "generator-jhipster-basic-auth",
+  "version": "0.0.1",
+  "description": "Adds stateless basic authentication support",
+  "keywords": [
+    "yeoman-generator",
+    "jhipster-module"
+  ],
+  "homepage": "https://github.com/cbornet/generator-jhipster-basic-auth",
+  "bugs": "https://github.com/cbornet/generator-jhipster-basic-auth/issues",
+  "author": {
+    "name": "Christophe Bornet",
+    "email": "",
+    "url": ""
+  },
+  "files": [
+    "generators"
+  ],
+  "main": "generators/app/index.js",
+  "repository": "https://github.com/cbornet/generator-jhipster-basic-auth",
+  "dependencies": {
+    "yeoman-generator": "0.21.1",
+    "chalk": "1.0.0",
+    "yosay": "1.0.2",
+    "generator-jhipster": ">=2.26.0"
+  },
+  "license": "Apache-2.0"
 }
