@@ -5,6 +5,7 @@
 # Introduction
 
 This is a [JHipster](http://jhipster.github.io/) module, that is meant to be used in a JHipster application.
+
 This module configures stateless basic auth security on the path ```/api_basic/**``` that is used in parallel of the existing security.
 Before using this module, you should be aware of the security implications : the user/password will be sent on each request so an HTTPS/TLS reverse proxy shall be used in production for this path.
 Also if your API is to be consumed by both web and non-web applications, you should consider using OAuth2 mechanism as it gives you more control on which application uses your API and it is fully supported by JHipster.
@@ -34,6 +35,8 @@ Run the module on a JHipster generated application:
 ```
 yo jhipster-basic-auth
 ```
+Use the option ```--force``` if you don't want questions to be asked.
+
 This will configure basic auth security on path ```/api_basic/**```. Existing entity resources will be added to this path (eg. ```GET /api_basic/foos```).
 If you generate new entities, you need to run the generator again to add them to the api_basic path (generator hook on entity generator is WIP).
 To add other or custom endpoints to the api_basic path, annotate your class with :
