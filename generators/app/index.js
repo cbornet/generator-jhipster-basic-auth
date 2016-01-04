@@ -3,6 +3,8 @@ var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
 var yosay = require('yosay');
 var packagejs = require(__dirname + '/../../package.json');
+var fs = require('fs');
+var path = require('path');
 
 // Stores JHipster variables
 var jhipsterVar = {moduleName: 'basic-auth'};
@@ -26,28 +28,42 @@ module.exports = yeoman.generators.Base.extend({
       this.log(yosay(
         'Welcome to the ' + chalk.red('JHipster basic-auth') + ' generator! ' + chalk.yellow('v' + packagejs.version)
       ));
+    },
+    getEntitityNames: function () {
+      var existingEntities = [],
+      existingEntityNames = fs.readdirSync('.jhipster');
+      existingEntityNames.forEach(function(entry) {
+        var entityName = entry.replace('.json','');
+        existingEntities.push(entityName);
+      });
+      this.existingEntities = existingEntities;
     }
   },
 
   prompting: function () {
     var done = this.async();
 
-    var prompts = [{
-      type: 'input',
-      name: 'message',
-      message: 'Your project files will be modified. Are you sure you want to continue ? (y/N)',
-      default: 'N'
-    }];
+    if(this.options.force !== true) {
+      var prompts = [{
+        type: 'input',
+        name: 'continue',
+        message: 'Your project files will be modified. Are you sure you want to continue ? (y/N)',
+        default: 'N'
+      }]
 
-    this.prompt(prompts, function (props) {
-      this.props = props;
-      // To access props later use this.props.someOption;
-
+      this.prompt(prompts, function (props) {
+        if(props.continue.toUpperCase() !== 'Y') {
+          process.exit(1);
+        }
+        done();
+      }.bind(this));
+    } else {
       done();
-    }.bind(this));
+    }
   },
 
   writing: function () {
+
     var done = this.async();
 
     this.baseName = jhipsterVar.baseName;
@@ -57,12 +73,21 @@ module.exports = yeoman.generators.Base.extend({
     var resourceDir = jhipsterVar.resourceDir;
     var webappDir = jhipsterVar.webappDir;
 
-    if(this.props.message.toUpperCase() !== 'Y') {
-        process.exit(1);
+    //Remove when #2557 is merged
+    this.replaceContent = function replaceContent (filePath, pattern, content) {
+      this.log("modifying " + filePath);
+      var fullPath = path.join(process.cwd(), filePath);
+      var body = fs.readFileSync(fullPath, 'utf8');
+      body = body.replace(pattern, content);
+      fs.writeFileSync(fullPath, body);
     }
 
     this.template('src/main/java/package/config/_BasicAuthSecurityConfiguration.java', javaDir + '/config/BasicAuthSecurityConfiguration.java', this, {});
-
+    if (this.existingEntities) {
+      this.existingEntities.forEach(function(entityName) {
+        this.replaceContent(javaDir + 'web/rest/' + entityName + 'Resource.java', '@RequestMapping("/api")', '@RequestMapping({"/api", "/api_basic"})');
+      }, this);
+    }
     done();
   }
 });
