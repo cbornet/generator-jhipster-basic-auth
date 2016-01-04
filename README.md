@@ -5,8 +5,8 @@
 # Introduction
 
 This is a [JHipster](http://jhipster.github.io/) module, that is meant to be used in a JHipster application.
-This module configures stateless basic auth security on the path ```/api_basic/**```.
-Before using this module, you should be aware of the security implications : the user/password will be sent on each request so a HTTPS/TLS reverse proxy is mandatory in production.
+This module configures stateless basic auth security on the path ```/api_basic/**``` that is used in parallel of the existing security.
+Before using this module, you should be aware of the security implications : the user/password will be sent on each request so an HTTPS/TLS reverse proxy shall be used in production for this path.
 Also if your API is to be consumed by both web and non-web applications, you should consider using OAuth2 mechanism as it gives you more control on which application uses your API and it is fully supported by JHipster.
 
 # Prerequisites
@@ -29,6 +29,7 @@ npm update -g generator-jhipster-basic-auth
 ```
 
 # Usage
+
 Run the module on a JHipster generated application:
 ```
 yo jhipster-basic-auth
@@ -40,6 +41,10 @@ To add other or custom endpoints to the api_basic path, annotate your class with
 @RestController
 @RequestMapping({"/api", "/api_basic"})
 public class FooController {
+```
+You can now easily use curl to test your endpoints:
+```
+curl -X GET "http://admin:admin@localhost:8080/api_basic/foos"
 ```
 
 # License
