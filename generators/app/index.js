@@ -3,6 +3,7 @@ var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
 var yosay = require('yosay');
 var packagejs = require(__dirname + '/../../package.json');
+var shelljs = require('shelljs');
 var fs = require('fs');
 var path = require('path');
 
@@ -11,6 +12,22 @@ var jhipsterVar = {moduleName: 'basic-auth'};
 
 // Stores JHipster functions
 var jhipsterFunc = {};
+
+//Remove when jhipster > 2.26.2 is out
+function replaceContent (filePath, pattern, content) {
+  console.log("Modify the file - " + filePath);
+  var fullPath = path.join(process.cwd(), filePath);
+  var body = fs.readFileSync(fullPath, 'utf8');
+  body = body.replace(pattern, content);
+  fs.writeFileSync(fullPath, body);
+}
+
+function removefile(file) {
+    console.log('Remove the file - ' + file)
+    if (shelljs.test('-f', file)) {
+        shelljs.rm(file);
+    }
+}
 
 module.exports = yeoman.generators.Base.extend({
 
@@ -78,21 +95,21 @@ module.exports = yeoman.generators.Base.extend({
     writeFiles : function () {
       var done = this.async();
 
-      //Remove when #2557 is merged
-      this.replaceContent = function replaceContent (filePath, pattern, content) {
-        this.log("modifying " + filePath);
-        var fullPath = path.join(process.cwd(), filePath);
-        var body = fs.readFileSync(fullPath, 'utf8');
-        body = body.replace(pattern, content);
-        fs.writeFileSync(fullPath, body);
-      }
+      if(this.options.clean === true) {
+        removefile(this.javaDir + '/config/BasicAuthSecurityConfiguration.java');
+        if (this.existingEntities) {
+          this.existingEntities.forEach(function(entityName) {
+            replaceContent(this.javaDir + 'web/rest/' + entityName + 'Resource.java', '@RequestMapping({"/api", "/api_basic"})', '@RequestMapping("/api")');
+          }, this);
+        }
 
-      this.template('src/main/java/package/config/_BasicAuthSecurityConfiguration.java', this.javaDir + '/config/BasicAuthSecurityConfiguration.java', this, {});
-      if (this.existingEntities) {
-        this.existingEntities.forEach(function(entityName) {
-          //jhipsterFunc.replaceContent(this.javaDir + 'web/rest/' + entityName + 'Resource.java', '@RequestMapping("/api")', '@RequestMapping({"/api", "/api_basic"})');
-          this.replaceContent(this.javaDir + 'web/rest/' + entityName + 'Resource.java', '@RequestMapping("/api")', '@RequestMapping({"/api", "/api_basic"})');
-        }, this);
+      } else {
+        this.template('src/main/java/package/config/_BasicAuthSecurityConfiguration.java', this.javaDir + '/config/BasicAuthSecurityConfiguration.java', this, {});
+        if (this.existingEntities) {
+          this.existingEntities.forEach(function(entityName) {
+            replaceContent(this.javaDir + 'web/rest/' + entityName + 'Resource.java', '@RequestMapping("/api")', '@RequestMapping({"/api", "/api_basic"})');
+          }, this);
+        }
       }
       done();
     },

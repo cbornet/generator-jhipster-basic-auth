@@ -35,7 +35,9 @@ Run the module on a JHipster generated application:
 ```
 yo jhipster-basic-auth
 ```
-Use the option ```--force``` if you don't want questions to be asked.
+Options :
+* ```--force``` if you don't want questions to be asked.
+* ```--clean``` to uninstall the module instead of installing.
 
 This will configure basic auth security on path ```/api_basic/**```. Existing entity resources will be added to this path (eg. ```GET /api_basic/foos```).
 If you generate new entities, you need to run the generator again to add them to the api_basic path (generator hook on entity generator is WIP).
