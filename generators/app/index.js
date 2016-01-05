@@ -78,7 +78,6 @@ module.exports = yeoman.generators.Base.extend({
 
     writeFiles : function () {
       var done = this.async();
-      this.log(this.config.getAll());
 
       //Remove when jhipster > 2.26.2 is out
       this.replaceContent = function replaceContent (filePath, pattern, content) {
