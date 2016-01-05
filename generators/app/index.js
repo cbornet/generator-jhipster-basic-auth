@@ -13,22 +13,6 @@ var jhipsterVar = {moduleName: 'basic-auth'};
 // Stores JHipster functions
 var jhipsterFunc = {};
 
-//Remove when jhipster > 2.26.2 is out
-function replaceContent (filePath, pattern, content) {
-  console.log("Modify the file - " + filePath);
-  var fullPath = path.join(process.cwd(), filePath);
-  var body = fs.readFileSync(fullPath, 'utf8');
-  body = body.replace(pattern, content);
-  fs.writeFileSync(fullPath, body);
-}
-
-function removefile(file) {
-    console.log('Remove the file - ' + file)
-    if (shelljs.test('-f', file)) {
-        shelljs.rm(file);
-    }
-}
-
 module.exports = yeoman.generators.Base.extend({
 
   initializing: {
@@ -94,12 +78,20 @@ module.exports = yeoman.generators.Base.extend({
 
     writeFiles : function () {
       var done = this.async();
+      this.log(this.config.getAll());
+
+      //Remove when jhipster > 2.26.2 is out
+      this.replaceContent = function replaceContent (filePath, pattern, content) {
+        var body = this.fs.read(filePath);
+        body = body.replace(pattern, content);
+        this.fs.write(filePath, body);
+      }
 
       if(this.options.clean === true) {
-        removefile(this.javaDir + '/config/BasicAuthSecurityConfiguration.java');
+        this.fs.delete(this.javaDir + '/config/BasicAuthSecurityConfiguration.java')
         if (this.existingEntities) {
           this.existingEntities.forEach(function(entityName) {
-            replaceContent(this.javaDir + 'web/rest/' + entityName + 'Resource.java', '@RequestMapping({"/api", "/api_basic"})', '@RequestMapping("/api")');
+            this.replaceContent(this.javaDir + 'web/rest/' + entityName + 'Resource.java', '@RequestMapping({"/api", "/api_basic"})', '@RequestMapping("/api")');
           }, this);
         }
 
@@ -107,7 +99,7 @@ module.exports = yeoman.generators.Base.extend({
         this.template('src/main/java/package/config/_BasicAuthSecurityConfiguration.java', this.javaDir + '/config/BasicAuthSecurityConfiguration.java', this, {});
         if (this.existingEntities) {
           this.existingEntities.forEach(function(entityName) {
-            replaceContent(this.javaDir + 'web/rest/' + entityName + 'Resource.java', '@RequestMapping("/api")', '@RequestMapping({"/api", "/api_basic"})');
+            this.replaceContent(this.javaDir + 'web/rest/' + entityName + 'Resource.java', '@RequestMapping("/api")', '@RequestMapping({"/api", "/api_basic"})');
           }, this);
         }
       }
