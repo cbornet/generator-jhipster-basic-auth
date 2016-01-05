@@ -77,10 +77,21 @@ module.exports = yeoman.generators.Base.extend({
 
     writeFiles : function () {
       var done = this.async();
+
+      //Remove when #2557 is merged
+      this.replaceContent = function replaceContent (filePath, pattern, content) {
+        this.log("modifying " + filePath);
+        var fullPath = path.join(process.cwd(), filePath);
+        var body = fs.readFileSync(fullPath, 'utf8');
+        body = body.replace(pattern, content);
+        fs.writeFileSync(fullPath, body);
+      }
+
       this.template('src/main/java/package/config/_BasicAuthSecurityConfiguration.java', this.javaDir + '/config/BasicAuthSecurityConfiguration.java', this, {});
       if (this.existingEntities) {
         this.existingEntities.forEach(function(entityName) {
-          jhipsterFunc.replaceContent(this.javaDir + 'web/rest/' + entityName + 'Resource.java', '@RequestMapping("/api")', '@RequestMapping({"/api", "/api_basic"})');
+          //jhipsterFunc.replaceContent(this.javaDir + 'web/rest/' + entityName + 'Resource.java', '@RequestMapping("/api")', '@RequestMapping({"/api", "/api_basic"})');
+          this.replaceContent(this.javaDir + 'web/rest/' + entityName + 'Resource.java', '@RequestMapping("/api")', '@RequestMapping({"/api", "/api_basic"})');
         }, this);
       }
       done();
