@@ -36,12 +36,14 @@ module.exports = yeoman.generators.Base.extend({
       try{
         existingEntityNames = fs.readdirSync('.jhipster');
       } catch(e) {
-        this.log(chalk.yellow('WARN!') + ' Could not read entities, is it normal ?\n');
+        this.log(chalk.red.bold('ERROR!') + ' Could not read entities, you might not have generated any entities yet. I will continue to install basic auth, entities will not be updated...\n');
       }
 
       existingEntityNames.forEach(function(entry) {
-        var entityName = entry.replace('.json','');
-        existingEntities.push(entityName);
+        if(entry.indexOf('.json') !== -1){
+          var entityName = entry.replace('.json','');
+          existingEntities.push(entityName);
+        }
       });
       this.existingEntities = existingEntities;
     }
@@ -52,14 +54,14 @@ module.exports = yeoman.generators.Base.extend({
 
     if(this.options.force !== true) {
       var prompts = [{
-        type: 'input',
+        type: 'confirm',
         name: 'continue',
-        message: 'Your project files will be modified. Are you sure you want to continue ? (y/N)',
-        default: 'N'
+        message: 'Your project files will be modified. Are you sure you want to continue ?',
+        default: false
       }]
 
       this.prompt(prompts, function (props) {
-        if(props.continue.toUpperCase() !== 'Y') {
+        if(!props.continue) {
           process.exit(1);
         }
         done();
@@ -79,18 +81,11 @@ module.exports = yeoman.generators.Base.extend({
     writeFiles : function () {
       var done = this.async();
 
-      //Remove when jhipster > 2.26.2 is out
-      this.replaceContent = function replaceContent (filePath, pattern, content) {
-        var body = this.fs.read(filePath);
-        body = body.replace(pattern, content);
-        this.fs.write(filePath, body);
-      }
-
       if(this.options.clean === true) {
         this.fs.delete(this.javaDir + '/config/BasicAuthSecurityConfiguration.java')
         if (this.existingEntities) {
           this.existingEntities.forEach(function(entityName) {
-            this.replaceContent(this.javaDir + 'web/rest/' + entityName + 'Resource.java', '@RequestMapping({"/api", "/api_basic"})', '@RequestMapping("/api")');
+            jhipsterFunc.replaceContent(this.javaDir + 'web/rest/' + entityName + 'Resource.java', '@RequestMapping({"/api", "/api_basic"})', '@RequestMapping("/api")');
           }, this);
         }
 
@@ -98,28 +93,21 @@ module.exports = yeoman.generators.Base.extend({
         this.template('src/main/java/package/config/_BasicAuthSecurityConfiguration.java', this.javaDir + '/config/BasicAuthSecurityConfiguration.java', this, {});
         if (this.existingEntities) {
           this.existingEntities.forEach(function(entityName) {
-            this.replaceContent(this.javaDir + 'web/rest/' + entityName + 'Resource.java', '@RequestMapping("/api")', '@RequestMapping({"/api", "/api_basic"})');
+            jhipsterFunc.replaceContent(this.javaDir + 'web/rest/' + entityName + 'Resource.java', '@RequestMapping("/api")', '@RequestMapping({"/api", "/api_basic"})');
           }, this);
         }
       }
       done();
     },
 
-    /*registering: function () {
+    registering: function () {
       try {
-        var moduleConfig = {
-          name : jhipsterVar.moduleName,
-          npmPackageName : packagejs.name,
-          description : packagejs.description,
-          hookFor : "entity",
-          hookType : "post",
-          generatorCallback : "jhipster-" + jhipsterVar.moduleName + ":entity"
-        }
-        jhipsterFunc.registerModule(moduleConfig);
+        jhipsterFunc.registerModule(packagejs.name, "entity", "post", "entity", packagejs.description);
       } catch (err) {
-        this.log(err);
         this.log(chalk.red.bold('WARN!') + ' Could not register as a jhipster post entity creation hook...\n');
       }
-    }*/
+    }
+
   }
+
 });

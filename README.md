@@ -40,13 +40,7 @@ Options :
 * ```--clean``` to uninstall the module instead of installing.
 
 This will configure basic auth security on path ```/api_basic/**```. Existing entity resources will be added to this path (eg. ```GET /api_basic/foos```).
-If you generate new entities, you need to run the generator again to add them to the api_basic path (generator hook on entity generator is WIP).
-To add other or custom endpoints to the api_basic path, annotate your class with :
-```java
-@RestController
-@RequestMapping({"/api", "/api_basic"})
-public class FooController {
-```
+
 You can now easily use curl to test your endpoints:
 ```
 curl -X GET "http://admin:admin@localhost:8080/api_basic/foos"
