@@ -1,6 +1,6 @@
 {
   "name": "generator-jhipster-basic-auth",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Adds stateless basic authentication support",
   "keywords": [
     "yeoman-generator",
