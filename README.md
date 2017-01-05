@@ -6,6 +6,8 @@
 
 This is a [JHipster](http://jhipster.github.io/) module, that is meant to be used in a JHipster application.
 
+Warning : this module only works with Monolithic application. It is not compatible with the JWT mechanism used in Micro-Service Applications.
+
 This module configures stateless basic auth security on the path ```/api_basic/**``` that is used in parallel of the existing security.
 Before using this module, you should be aware of the security implications : the user/password will be sent on each request so an HTTPS/TLS reverse proxy shall be used in production for this path.
 Also if your API is to be consumed by both web and non-web applications, you should consider using OAuth2 mechanism as it gives you more control on which application uses your API and it is fully supported by JHipster.
